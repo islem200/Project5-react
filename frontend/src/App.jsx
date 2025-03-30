@@ -10,6 +10,7 @@ import Main from "./components/main/main";
 import Footer from "./components/footer/Footer";
 import ScrollTop from "./components/scroll/ScrollTop";
 
+
 function App() {
   const [theme, colorMode] = useMode();
   return (
@@ -23,6 +24,7 @@ function App() {
       >
         <CssBaseline />
 
+
         <Header1 />
         <Header2 />
         <Header3 />
@@ -32,7 +34,7 @@ function App() {
           <Main />
           <Footer />
         </Box>
-        <ScrollTop/>
+        <ScrollTop />
       </ThemeProvider>
     </ColorModeContext.Provider>
   );

@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 
 import {
   Box,
+  CircularProgress,
   Container,
   IconButton,
   Rating,
@@ -25,10 +26,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Close } from "@mui/icons-material";
 import ProductDetails from "./ProductDetails";
 import { useGetproductByNameQuery } from "../../../Redux/product";
+import { AnimatePresence, motion } from "motion/react";
 
 function Main() {
   const handleAlignment = (event, newValue) => {
-    setmyDate(newValue);
+    if (newValue !== null) {
+      setmyDate(newValue);
+    }
   };
 
   const theme = useTheme();
@@ -52,17 +56,22 @@ function Main() {
   const [myDate, setmyDate] = useState(allProductsAPI);
 
   const { data, error, isLoading } = useGetproductByNameQuery(myDate);
+  const [clickedProduct, setclickedProduct] = useState({});
 
   if (isLoading) {
-    <Typography variant="h6">LOADING...</Typography>;
+    return (
+      <Box sx={{ py: 11, textAlign: "center" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
   if (error) {
-    <Typography variant="h6">
-      {
-        // @ts-ignore
-        error.message
-      }
-    </Typography>;
+    return (
+      <Container sx={{ py: 11, textAlign: "center" }}>
+        <Typography variant="h6">{error.error}</Typography>
+        <Typography variant="h6">Please try again later</Typography>
+      </Container>
+    );
   }
 
   if (data) {
@@ -130,10 +139,19 @@ function Main() {
           flexWrap={"wrap"}
           justifyContent={"space-between"}
         >
+
+          <AnimatePresence>
+
+
           {data.data.map((item) => {
             return (
               <Card
-                key={item}
+                component={motion.section}
+                layout
+                initial={{ transform: "scale(0)" }}
+                animate={{ transform: "scale(1)" }}
+                transition={{duration: 1.6, type: "spring", stiffness: 50}}
+                key={item.id}
                 sx={{
                   maxWidth: 333,
                   mt: 6,
@@ -171,7 +189,10 @@ function Main() {
                 </CardContent>
                 <CardActions sx={{ justifyContent: "space-between" }}>
                   <Button
-                    onClick={handleClickOpen}
+                    onClick={() => {
+                      handleClickOpen();
+                      setclickedProduct(item);
+                    }}
                     sx={{ textTransform: "capitalize" }}
                     size="large"
                   >
@@ -191,6 +212,7 @@ function Main() {
               </Card>
             );
           })}
+          </AnimatePresence>
         </Stack>
 
         <Dialog
@@ -212,7 +234,7 @@ function Main() {
             <Close />
           </IconButton>
 
-          <ProductDetails />
+          <ProductDetails clickedProduct={clickedProduct} />
         </Dialog>
       </Container>
     );
